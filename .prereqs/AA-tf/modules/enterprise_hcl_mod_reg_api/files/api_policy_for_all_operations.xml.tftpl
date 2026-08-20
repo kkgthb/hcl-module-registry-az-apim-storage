@@ -1,0 +1,40 @@
+<!--
+    - Policies are applied in the order they appear.
+    - Position <base/> inside a section to inherit policies from the outer scope.
+    - Comments within policies are not preserved.
+-->
+<!-- Add policies as children to the <inbound>, <outbound>, <backend>, and <on-error> elements -->
+<policies>
+    <!-- Throttle, authorize, validate, cache, or transform the requests -->
+    <inbound>
+        <base />
+        <!-- Conditional JWT validation: skip for download-archive (uses query param token), validate for all others -->
+        <choose>
+            <when condition="@(context.Operation.Id != &quot;download-archive&quot;)">
+                <validate-jwt header-name="Authorization" failed-validation-httpcode="401" failed-validation-error-message="Unauthorized. Access token is missing or invalid.">
+                    <openid-config url="https://login.microsoftonline.com/${entra_tenant_id}/v2.0/.well-known/openid-configuration" />
+                    <!--<audiences>
+                        <audience>TODO_CAN_I_SKIP_THIS_FOR_NOW_I_HOPE_SO</audience>
+                    </audiences>
+                    <required-claims>
+                        <claim name="roles" match="any">
+                            <value>TODO_CAN_I_SKIP_THIS_FOR_NOW_I_HOPE_SO</value>
+                        </claim>
+                    </required-claims>-->
+                </validate-jwt>
+            </when>
+        </choose>
+    </inbound>
+    <!-- Control if and how the requests are forwarded to services  -->
+    <backend>
+        <base />
+    </backend>
+    <!-- Customize the responses -->
+    <outbound>
+        <base />
+    </outbound>
+    <!-- Handle exceptions and customize error responses  -->
+    <on-error>
+        <base />
+    </on-error>
+</policies>

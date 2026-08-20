@@ -1,0 +1,50 @@
+# Authorship credit:  one of my peers.  I just added commentary and renamed things.
+openapi: "3.0.1"
+info:
+  title: "Enterprise-wide HCL Module Registry API"
+  description: "Enterprise-wide HCL Module Registry API"
+  version: "v1"
+paths:
+  "/{namespace}/{name}/{provider}/versions":
+    get:
+      # https://developer.hashicorp.com/terraform/internals/module-registry-protocol#list-available-versions-for-a-specific-module
+      summary: "list-versions"
+      description: "list-versions"
+      operationId: "list-versions"
+      parameters:
+        - name: "namespace"
+          in: "path"
+          required: true
+          schema:
+            type: "string"
+        - name: "name"
+          in: "path"
+          required: true
+          schema:
+            type: "string"
+        - name: "provider"
+          in: "path"
+          required: true
+          schema:
+            type: "string"
+      responses:
+        "200":
+          description: "Successful response with available module versions"
+          content:
+            application/json:
+              schema:
+                type: "object"
+                properties:
+                  modules:
+                    type: "array"
+                    items:
+                      type: "object"
+                      properties:
+                        versions:
+                          type: "array"
+                          items:
+                            type: "object"
+                            properties:
+                              version:
+                                type: "string"
+# TODO:  the rest of the paths, one by one.  Not working on them just yet.
