@@ -26,4 +26,13 @@ resource "azurerm_api_management" "my_apim" {
   publisher_name      = "Demo Publisher"
   publisher_email     = "admin@example.com"
   sku_name            = "Consumption_0"
+  identity {
+    type = "SystemAssigned"
+  }
+}
+
+resource "azurerm_role_assignment" "container_module_registry_blob_contributor" {
+  principal_id         = azurerm_api_management.my_apim.identity[0].principal_id
+  role_definition_name = "Storage Blob Data Reader"
+  scope                = var.storacct_instance.id
 }

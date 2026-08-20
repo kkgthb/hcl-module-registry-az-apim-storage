@@ -9,14 +9,6 @@ variable "resource_group" {
 }
 
 variable "workload_nickname" {
-  type     = string
+  type = string
   nullable = false
-}
-
-variable "storacct_instance" {
-  description = "Key details about the storage account instance to which this APIM instance will need blob reader access"
-  type = object({
-    id   = string
-    name = string
-  })
 }

@@ -22,6 +22,19 @@ resource "azurerm_resource_group" "my_resource_group" {
   location = "centralus"
 }
 
+module "storageaccount" {
+  source = "./modules/storageaccount"
+  providers = {
+    azurerm = azurerm.demo
+  }
+  resource_group = {
+    id       = azurerm_resource_group.my_resource_group.id
+    name     = azurerm_resource_group.my_resource_group.name
+    location = azurerm_resource_group.my_resource_group.location
+  }
+  workload_nickname = var.workload_nickname
+}
+
 module "apimanagement" {
   source = "./modules/apimanagement"
   providers = {
@@ -33,7 +46,7 @@ module "apimanagement" {
     location = azurerm_resource_group.my_resource_group.location
   }
   workload_nickname = var.workload_nickname
-  depends_on        = [azurerm_resource_group.my_resource_group]
+  storacct_instance = module.storageaccount.storacct_instance
 }
 
 module "apim_enterprise_root_api" {
@@ -44,5 +57,4 @@ module "apim_enterprise_root_api" {
   apim_instance     = module.apimanagement.apim_instance
   resource_group    = azurerm_resource_group.my_resource_group
   workload_nickname = var.workload_nickname
-  depends_on        = [module.apimanagement]
 }

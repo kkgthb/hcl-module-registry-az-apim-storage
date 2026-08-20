@@ -24,5 +24,4 @@ resource "azurerm_api_management_api_operation_policy" "op_pol_get_well_known_tf
   api_management_name = var.apim_instance.name
   resource_group_name = var.resource_group.name
   xml_content         = file("${path.module}/files/operation_policy_get_well_known_terraform_json.xml")
-  depends_on          = [azurerm_api_management_api.enterprise_root_api]
 }
