@@ -36,6 +36,16 @@ BeforeAll {
     $script:ApimGatewayBaseUrl = "https://$($script:ApimName).azure-api.net"
     $script:WellKnownTerraformJsonUrl = "$($script:ApimGatewayBaseUrl)/.well-known/terraform.json"
     Write-Host "Well-known enterprise root terraform.json URL is $script:WellKnownTerraformJsonUrl"
+
+    $script:StoracctName = $script:TfOutputs.storacct_name.value
+    if ([string]::IsNullOrWhiteSpace($script:StoracctName)) {
+        throw "Terraform output 'storacct_name' was empty. Have you run zzz-run-something-like-this-to-apply.ps1 yet?"
+    }
+
+    $script:HclModRegContainerName = $script:TfOutputs.hcl_mod_reg_container_name.value
+    if ([string]::IsNullOrWhiteSpace($script:HclModRegContainerName)) {
+        throw "Terraform output 'hcl_mod_reg_container_name' was empty. Have you run zzz-run-something-like-this-to-apply.ps1 yet?"
+    }
 }
 
 Describe "enterprise_root_api module: GET /.well-known/terraform.json" {
@@ -70,5 +80,28 @@ Describe "enterprise_root_api module: GET /.well-known/terraform.json" {
         # See modules/enterprise_root_api/files/operation_policy_get_well_known_terraform_json.xml
         $body = $script:Response.Content | ConvertFrom-Json
         $body.'modules.v1' | Should -Be '/my-company-hcl-module-registry/v1/'
+    }
+}
+
+Describe "enterprise_hcl_mod_reg_api module: HCL module registry blob container" {
+
+    BeforeAll {
+        # Requires the caller to already be logged into the Azure CLI (see zzz-run-something-like-this-to-apply.ps1)
+        # with a principal that was granted the Storage Blob Data Contributor role assignment in main.tf.
+        # It will seem to no-op and hang if you are not logged in, because Pester will not surface the reminder that you are not logged in.
+        $rawBlobList = az storage blob list `
+            --account-name $script:StoracctName `
+            --container-name $script:HclModRegContainerName `
+            --auth-mode 'login' `
+            --output 'json' 2>&1
+        if ($LASTEXITCODE -ne 0) {
+            throw "``az storage blob list`` failed against container '$script:HclModRegContainerName' in storage account '$script:StoracctName': $rawBlobList"
+        }
+        $script:HclModRegBlobs = $rawBlobList | ConvertFrom-Json
+    }
+
+    # For future fixes:  this is a little sloppy, since it doesn't validate whether the container even exists before moving on to this test, but whatevs, for now.
+    It "contains 0 files, since no modules have been published to the registry yet" {
+        @($script:HclModRegBlobs).Count | Should -Be 0
     }
 }

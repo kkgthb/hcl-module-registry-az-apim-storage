@@ -58,3 +58,14 @@ module "apim_enterprise_root_api" {
   resource_group    = azurerm_resource_group.my_resource_group
   workload_nickname = var.workload_nickname
 }
+
+module "enterprise_hcl_module_registry_storcont_and_apimapi" {
+  source = "./modules/enterprise_hcl_mod_reg_api"
+  providers = {
+    azurerm = azurerm.demo
+  }
+  storacct_instance = module.storageaccount.storacct_instance
+  apim_instance     = module.apimanagement.apim_instance
+  resource_group    = azurerm_resource_group.my_resource_group
+  workload_nickname = var.workload_nickname
+}
