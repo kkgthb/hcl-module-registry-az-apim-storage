@@ -33,4 +33,16 @@ module "apimanagement" {
     location = azurerm_resource_group.my_resource_group.location
   }
   workload_nickname = var.workload_nickname
+  depends_on        = [azurerm_resource_group.my_resource_group]
+}
+
+module "apim_enterprise_root_api" {
+  source = "./modules/enterprise_root_api"
+  providers = {
+    azurerm = azurerm.demo
+  }
+  apim_instance     = module.apimanagement.apim_instance
+  resource_group    = azurerm_resource_group.my_resource_group
+  workload_nickname = var.workload_nickname
+  depends_on        = [module.apimanagement]
 }

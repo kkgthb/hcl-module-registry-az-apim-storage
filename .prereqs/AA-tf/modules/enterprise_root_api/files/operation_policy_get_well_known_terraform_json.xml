@@ -1,0 +1,35 @@
+<!-- Authorship credit:  one of my peers.  I just added commentary and renamed things. -->
+<!--
+    - Policies are applied in the order they appear.
+    - Position <base/> inside a section to inherit policies from the outer scope.
+    - Comments within policies are not preserved.
+-->
+<!-- Add policies as children to the <inbound>, <outbound>, <backend>, and <on-error> elements -->
+<policies>
+    <!-- Throttle, authorize, validate, cache, or transform the requests -->
+    <inbound>
+        <base />
+        <!-- Use APIM mocking to always return a hardcoded "document" response compliant with
+        Terraform Remote Service Discovery protocols -->
+        <return-response>
+            <set-status code="200" reason="OK" />
+            <set-header name="Content-Type" exists-action="override">
+                <value>application/json</value>
+            </set-header>
+            <!-- Tip:  edit the body to match your actual registry URL fragment, of course -->
+            <set-body>{"modules.v1":"/my-company-hcl-module-registry/v1/"}</set-body>
+        </return-response>
+    </inbound>
+    <!-- Control if and how the requests are forwarded to services  -->
+    <backend>
+        <base />
+    </backend>
+    <!-- Customize the responses -->
+    <outbound>
+        <base />
+    </outbound>
+    <!-- Handle exceptions and customize error responses  -->
+    <on-error>
+        <base />
+    </on-error>
+</policies>

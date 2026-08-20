@@ -1,0 +1,35 @@
+# Authorship credit:  one of my peers.  I just added commentary and renamed things.
+openapi: "3.0.1"
+info:
+  title: "Enterprise-wide root API with well-known URIs and such"
+  description: "Enterprise-wide root API with well-known URIs and such"
+  version: "1.0"
+paths:
+  /.well-known/terraform.json:
+    get:
+      # As far as the Terraform Module Registry Protocol is concerned,
+      # the most important thing is to expose 1 endpoint:  `GET` against `/.well-known/terraform.json`.
+      # https://developer.hashicorp.com/terraform/internals/remote-service-discovery#discovery-process
+      # (Of course, your OpenAPI specification might need to have additional "root"-level
+      # endpoints that support unrelated things, like other protocols from other vendors.)
+      summary: "Get Terraform Remote Service Discovery well-known document"
+      description: "Get Terraform Remote Service Discovery well-known document"
+      operationId: "get-wellknown-terraformjson"
+      responses:
+        "200":
+          description: "Successful response with Terraform Remote Service Discovery well-known document"
+          content:
+            application/json:
+              schema:
+                type: "object"
+                properties:
+                  modules.v1:
+                    # This is just a demo of a Module registry, not any other types of HCL registry,
+                    # so there will be just 1 property -- `modules.v1` -- in this particular demo codebase.
+                    type: "string"
+              example:
+                # If the response is a valid JSON object then its keys are Terraform native service identifiers,
+                # consisting of a service type name and a version string separated by a period.
+                # For example, the service identifier for version 1 of the HCL Module Registry Protocol is `modules.v1`.
+                # https://developer.hashicorp.com/terraform/internals/remote-service-discovery#discovery-process
+                modules.v1: "/v1/modules/"
