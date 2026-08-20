@@ -22,3 +22,10 @@ resource "azurerm_role_assignment" "enterprise_hcl_mod_reg_storacct_container_bl
   role_definition_name = "Storage Blob Data Contributor"
   scope                = azurerm_storage_container.enterprise_hcl_mod_reg_storacct_container.id
 }
+
+# TODO:  `azurerm_api_management_api` 
+# with a `Segment`-typed `versioning_scheme`'ed `azurerm_api_management_api_version_set`, 
+# with an all-operations-API-wide `azurerm_api_management_api_policy`, 
+# with an `azurerm_api_management_api_operation_policy` against the `list-versions` operation, 
+# with an `azurerm_api_management_api_operation_policy` against the `download-module` operation, and
+# with an `azurerm_api_management_api_operation_policy` against the `download-archive` operation.
